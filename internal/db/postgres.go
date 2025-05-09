@@ -3,8 +3,7 @@ package db
 import (
 	"fmt"
 	"log"
-
-	"github.com/GoArmGo/task-microservice/pkg/config"
+	"task-microservice/pkg/config"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq" // PostgreSQL driver
