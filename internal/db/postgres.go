@@ -17,10 +17,15 @@ func NewPostgres(cfg *config.Config) *Postgres {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DBHost, cfg.DBPort, cfg.DBUser, cfg.DBPassword, cfg.DBName)
 
-	db, err := sqlx.Connect("postgres", dsn)
+	db, err := sqlx.Connect(cfg.DBDriver, dsn)
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
 	return &Postgres{DB: db}
+}
+
+// пинг для чека
+func (p *Postgres) Ping() error {
+	return p.DB.Ping()
 }

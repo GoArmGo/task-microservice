@@ -8,6 +8,7 @@ import (
 )
 
 type Config struct {
+	DBDriver   string
 	DBHost     string
 	DBPort     string
 	DBUser     string
@@ -16,7 +17,7 @@ type Config struct {
 }
 
 func LoadConfig() *Config {
-	err := godotenv.Load()
+	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
@@ -27,5 +28,6 @@ func LoadConfig() *Config {
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
+		DBDriver:   os.Getenv("DB_DRIVER"),
 	}
 }
