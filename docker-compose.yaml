@@ -13,5 +13,19 @@ services:
       - ./migrations:/migrations
     restart: always
 
+  migrate:
+    image: migrate/migrate
+    depends_on:
+      - db
+    volumes:
+      - ./migrations:/migrations
+    command:
+      [
+        '-path=/migrations',
+        '-database=postgres://jt:secret@db:5432/tasks_db?sslmode=disable',
+        'up',
+      ]
+    restart: 'on-failure'
+
 volumes:
   pgdata:
