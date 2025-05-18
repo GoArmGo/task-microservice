@@ -3,7 +3,7 @@ DB_NAME = tasks_db
 DB_USER = jt
 DB_PASS = secret
 DB_PORT = 5432
-DB_HOST = db # Важно: имя сервиса в docker-compose
+DB_HOST = db
 
 reset-db:
 	docker-compose down -v
@@ -14,12 +14,18 @@ wait-db:
 	@scripts/wait-for-it.sh $(DB_HOST):$(DB_PORT) -t 30
 
 migrate-up:
-	docker exec -e PGPASSWORD=$(DB_PASS) $(DB_CONTAINER_NAME) \
-	  sh -c 'migrate -path /migrations -database "postgres://$(DB_USER):$(DB_PASS)@localhost:5432/$(DB_NAME)?sslmode=disable" up'
+	docker run --rm \
+	--network=task-microservice_default \
+	-v $(PWD)/migrations:/migrations \
+	migrate/migrate \
+	-path=/migrations -database "postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" up
 
 migrate-down:
-	docker exec -e PGPASSWORD=$(DB_PASS) $(DB_CONTAINER_NAME) \
-	  sh -c 'migrate -path /migrations -database "postgres://$(DB_USER):$(DB_PASS)@localhost:5432/$(DB_NAME)?sslmode=disable" down'
+	docker run --rm \
+	--network=task-microservice_default \
+	-v $(PWD)/migrations:/migrations \
+	migrate/migrate \
+	-path=/migrations -database "postgres://$(DB_USER):$(DB_PASS)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=disable" down
 
 migrate-create:
 	@if [ -z "$(name)" ]; then \
