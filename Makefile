@@ -1,20 +1,35 @@
+DB_CONTAINER_NAME = task_pg
+DB_NAME = tasks_db
+DB_USER = jt
+DB_PASS = secret
+DB_PORT = 5432
+DB_HOST = db # Важно: имя сервиса в docker-compose
+
 reset-db:
 	docker-compose down -v
 	docker-compose up -d
 
-DB_HOST ?= localhost
-
 wait-db:
 	@echo "⏳ Waiting for Postgres to be ready..."
-	@scripts/wait-for-it.sh $(DB_HOST):5432 -t 30
+	@scripts/wait-for-it.sh $(DB_HOST):$(DB_PORT) -t 30
 
 migrate-up:
-	@echo "⏳ Waiting for Postgres and tasks_db to be really ready..."
-	@scripts/wait-for-it.sh $(DB_HOST):5432 -- \
-	  sh -c 'until pg_isready -U jt -d tasks_db -h $(DB_HOST); do sleep 1; done && echo "✅ DB is ready!"; \
-	         migrate -path migrations -database "postgres://jt:secret@$(DB_HOST):5432/tasks_db?sslmode=disable" up'
+	docker exec -e PGPASSWORD=$(DB_PASS) $(DB_CONTAINER_NAME) \
+	  sh -c 'migrate -path /migrations -database "postgres://$(DB_USER):$(DB_PASS)@localhost:5432/$(DB_NAME)?sslmode=disable" up'
 
 migrate-down:
-	@scripts/wait-for-it.sh $(DB_HOST):5432 -- \
-	  sh -c 'until pg_isready -U jt -d tasks_db -h $(DB_HOST); do sleep 1; done && echo "✅ DB is ready!"; \
-	         migrate -path migrations -database "postgres://jt:secret@$(DB_HOST):5432/tasks_db?sslmode=disable" down'
+	docker exec -e PGPASSWORD=$(DB_PASS) $(DB_CONTAINER_NAME) \
+	  sh -c 'migrate -path /migrations -database "postgres://$(DB_USER):$(DB_PASS)@localhost:5432/$(DB_NAME)?sslmode=disable" down'
+
+migrate-create:
+	@if [ -z "$(name)" ]; then \
+		echo "⛔️ Usage: make migrate-create name=add_users_table"; \
+	else \
+		migrate create -ext sql -dir migrations $(name); \
+	fi
+
+psql:
+	docker exec -it $(DB_CONTAINER_NAME) psql -U $(DB_USER) -d $(DB_NAME)
+
+logs:
+	docker logs -f $(DB_CONTAINER_NAME)
