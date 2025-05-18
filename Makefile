@@ -6,5 +6,8 @@ wait-db:
 	@echo "⏳ Waiting for Postgres to be ready..."
 	@./wait-for-it.sh localhost:5432 -t 30
 
-migrate-up: wait-db
-	migrate -path migrations -database "postgres://jt:secret@localhost:5432/tasks_db?sslmode=disable" up
+migrate-up:
+	@echo "⏳ Waiting for Postgres and tasks_db to be really ready..."
+	scripts/wait-for-it.sh db:5432 -- \
+	  sh -c 'until pg_isready -U jt -d tasks_db -h db; do sleep 1; done && echo "✅ DB is ready!"; \
+	         migrate -path migrations -database "postgres://jt:secret@localhost:5432/tasks_db?sslmode=disable" up'
