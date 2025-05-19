@@ -23,7 +23,6 @@ func NewTaskService(repo repository.TaskRepository) *TaskServiceImpl {
 	return &TaskServiceImpl{repo: repo}
 }
 
-// правильная реализация интерфейса TaskService
 func (s *TaskServiceImpl) Create(ctx context.Context, task *model.Task) error {
 	if task.Name == "" {
 		return fmt.Errorf("task name cannot be empty")
