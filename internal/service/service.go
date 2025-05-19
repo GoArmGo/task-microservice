@@ -23,20 +23,26 @@ func NewTaskService(repo repository.TaskRepository) *TaskServiceImpl {
 	return &TaskServiceImpl{repo: repo}
 }
 
-// CreateTask создаёт задачу через репозиторий
-func (s *TaskServiceImpl) CreateTask(ctx context.Context, task *model.Task) error {
+// правильная реализация интерфейса TaskService
+func (s *TaskServiceImpl) Create(ctx context.Context, task *model.Task) error {
 	if task.Name == "" {
 		return fmt.Errorf("task name cannot be empty")
 	}
 	return s.repo.Create(ctx, task)
 }
 
-// GetTaskByID достаёт задачу по ID
-func (s *TaskServiceImpl) GetTaskByID(ctx context.Context, id int64) (*model.Task, error) {
+func (s *TaskServiceImpl) GetByID(ctx context.Context, id int64) (*model.Task, error) {
 	return s.repo.GetByID(ctx, id)
 }
 
-// GetAllTasks возвращает все задачи
-func (s *TaskServiceImpl) GetAllTasks(ctx context.Context) ([]*model.Task, error) {
+func (s *TaskServiceImpl) GetAll(ctx context.Context) ([]*model.Task, error) {
 	return s.repo.GetAll(ctx)
+}
+
+func (s *TaskServiceImpl) Update(ctx context.Context, task *model.Task) error {
+	return s.repo.Update(ctx, task)
+}
+
+func (s *TaskServiceImpl) Delete(ctx context.Context, id int64) error {
+	return s.repo.Delete(ctx, id)
 }
