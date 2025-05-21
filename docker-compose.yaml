@@ -41,6 +41,7 @@ services:
       DB_PASSWORD: secret
       DB_NAME: tasks_db
       DB_DRIVER: postgres
-
+    env_file:
+      - .env
 volumes:
   pgdata:
