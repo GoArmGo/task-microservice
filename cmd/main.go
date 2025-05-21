@@ -8,7 +8,10 @@ import (
 
 func main() {
 
-	con := config.LoadConfig()
+	con, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Config failed: %v", err)
+	}
 	db := db.NewPostgres(con)
 
 	if err := db.Ping(); err != nil {
