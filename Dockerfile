@@ -1,5 +1,5 @@
 # 1. Используем официальный образ Go
-FROM golang:1.24-1-alpine
+FROM golang:1.24.1-alpine
 
 # 2. Установка системных зависимостей
 RUN apk add --no-cache ca-certificates
