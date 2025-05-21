@@ -97,3 +97,14 @@ func (r *PostgresTaskRepository) Delete(ctx context.Context, id int64) error {
 
 	return nil
 }
+
+func (r *PostgresTaskRepository) DeleteAll(ctx context.Context) error {
+	query := `DELETE FROM tasks`
+
+	_, err := r.db.ExecContext(ctx, query)
+	if err != nil {
+		return fmt.Errorf("failed to delete all tasks: %w", err)
+	}
+
+	return nil
+}
