@@ -2,21 +2,19 @@ package main
 
 import (
 	"log"
-	"task-microservice/internal/db"
-	"task-microservice/pkg/config"
+	"task-microservice/internal/di"
 )
 
 func main() {
-
-	con, err := config.LoadConfig()
+	// Собираем все зависимости через DI-контейнер
+	container, err := di.NewContainer()
 	if err != nil {
-		log.Fatalf("Config failed: %v", err)
-	}
-	db := db.NewPostgres(con)
-
-	if err := db.Ping(); err != nil {
-		log.Fatalf("Database connection failed: %v", err)
+		log.Fatalf("failed to initialize container: %v", err)
 	}
 
-	log.Println("✅ Successfully connected to the database!")
+	// Запускаем HTTP-сервер на 8080 порту
+	log.Println("🚀 Server is running on http://localhost:8080")
+	if err := container.Router.Run(":8080"); err != nil {
+		log.Fatalf("failed to run server: %v", err)
+	}
 }
