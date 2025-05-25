@@ -7,6 +7,7 @@ import (
 	"task-microservice/internal/repository"
 )
 
+// слой с созданием тасков
 type TaskService interface {
 	CreateTask(ctx context.Context, task *model.Task) (*model.Task, error)
 	GetTaskByID(ctx context.Context, id int64) (*model.Task, error)

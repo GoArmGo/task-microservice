@@ -15,13 +15,13 @@ type Container struct {
 }
 
 func NewContainer() (*Container, error) {
-	// 1. Загружаем конфигурацию
+	// 1. Загружаем конфиг
 	cfg, err := config.LoadConfig()
 	if err != nil {
 		return nil, err
 	}
 
-	// 2. Инициализируем базу данных
+	// 2. Инициализируем бд
 	db := db.NewPostgres(cfg)
 	if err := db.Ping(); err != nil {
 		return nil, err

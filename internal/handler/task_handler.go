@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// обработка задач
 type TaskHandler struct {
 	service service.TaskService
 }

@@ -5,6 +5,7 @@ import (
 	"task-microservice/internal/model"
 )
 
+// управляющий интерфейс для таск модели
 type TaskRepository interface {
 	Create(ctx context.Context, task *model.Task) error
 	GetByID(ctx context.Context, id int64) (*model.Task, error)

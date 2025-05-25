@@ -15,6 +15,7 @@ type Config struct {
 	DBName     string
 }
 
+// собираем конфиг из .env
 func LoadConfig() (*Config, error) {
 	err := godotenv.Load(".env")
 	if err != nil {

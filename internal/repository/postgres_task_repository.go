@@ -8,6 +8,7 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+// слой с бд
 type PostgresTaskRepository struct {
 	db *sqlx.DB
 }
@@ -16,14 +17,14 @@ func NewPostgresTaskRepository(db *sqlx.DB) *PostgresTaskRepository {
 	return &PostgresTaskRepository{db: db}
 }
 
-// Create inserts a new task into the database
+// создаем новый такс и кидаем в бд
 func (r *PostgresTaskRepository) Create(ctx context.Context, task *model.Task) error {
 	query := `
 		INSERT INTO tasks (name, status, created_at, updated_at, due_date)
 		VALUES (:name, :status, :created_at, :updated_at, :due_date)
 		RETURNING id
 	`
-
+	// мапим поля запроса
 	stmt, err := r.db.PrepareNamedContext(ctx, query)
 	if err != nil {
 		return fmt.Errorf("prepare create: %w", err)
@@ -37,7 +38,7 @@ func (r *PostgresTaskRepository) Create(ctx context.Context, task *model.Task) e
 	return nil
 }
 
-// GetByID retrieves a task by its ID
+// поиск по id
 func (r *PostgresTaskRepository) GetByID(ctx context.Context, id int64) (*model.Task, error) {
 	query := `
 		SELECT id, name, status, created_at, updated_at, due_date
@@ -54,7 +55,7 @@ func (r *PostgresTaskRepository) GetByID(ctx context.Context, id int64) (*model.
 	return &task, nil
 }
 
-// GetAll retrieves all tasks from the database
+// получение фулл таблицы
 func (r *PostgresTaskRepository) GetAll(ctx context.Context) ([]*model.Task, error) {
 	query := `
 		SELECT id, name, status, created_at, updated_at, due_date
@@ -70,7 +71,7 @@ func (r *PostgresTaskRepository) GetAll(ctx context.Context) ([]*model.Task, err
 	return tasks, nil
 }
 
-// Update updates a task by its ID
+// обновить таску
 func (r *PostgresTaskRepository) Update(ctx context.Context, task *model.Task) error {
 	query := `
 		UPDATE tasks
@@ -86,7 +87,7 @@ func (r *PostgresTaskRepository) Update(ctx context.Context, task *model.Task) e
 	return nil
 }
 
-// Delete removes a task by its ID
+// удалить по id
 func (r *PostgresTaskRepository) Delete(ctx context.Context, id int64) error {
 	query := `DELETE FROM tasks WHERE id = $1`
 
@@ -98,6 +99,7 @@ func (r *PostgresTaskRepository) Delete(ctx context.Context, id int64) error {
 	return nil
 }
 
+// обнуление таблицы
 func (r *PostgresTaskRepository) DeleteAll(ctx context.Context) error {
 	query := `DELETE FROM tasks`
 
